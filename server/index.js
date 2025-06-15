@@ -2,24 +2,32 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const admin = require('firebase-admin');
-// In server/index.js
+const admin = require("firebase-admin");
+require("dotenv").config();
 
-// This code now handles both local file and the deployment environment variable
-const serviceAccountConfig = process.env.FIREBASE_SERVICE_ACCOUNT
-  ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-  : require('./serviceAccountKey.json');
+try {
+    const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT;
+    if (!serviceAccountBase64) {
+        throw new Error('FIREBASE_SERVICE_ACCOUNT environment variable is not set.');
+    }
 
-// --- THIS IS THE KEY FIX ---
-// It ensures the private key is formatted with real newlines, which Firebase needs.
-if (serviceAccountConfig.private_key) {
-  serviceAccountConfig.private_key = serviceAccountConfig.private_key.replace(/\\n/g, '\n');
+    // Decode the Base64 string into a JSON string
+    const serviceAccountJson = Buffer.from(serviceAccountBase64, 'base64').toString('utf8');
+    
+    // Parse the decoded JSON string
+    const serviceAccount = JSON.parse(serviceAccountJson);
+
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+    });
+
+} catch (error) {
+    console.error("Failed to initialize Firebase Admin SDK:", error);
+    // Exit the process if Firebase Admin fails to initialize, as the app cannot run without it.
+    process.exit(1);
 }
 
-// Now initialize Firebase with the corrected config
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccountConfig)
-});
+module.exports = admin;
 
 const db = require('./database.js');
 
