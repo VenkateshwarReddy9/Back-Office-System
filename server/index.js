@@ -17,9 +17,7 @@ try {
     // Parse the decoded JSON string
     const serviceAccount = JSON.parse(serviceAccountJson);
 
-    admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-    });
+
 
 } catch (error) {
     console.error("Failed to initialize Firebase Admin SDK:", error);
