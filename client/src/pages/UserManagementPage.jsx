@@ -14,7 +14,7 @@ const UserManagementPage = ({ userProfile }) => {
         const fetchUsers = async () => {
             if (!auth.currentUser) return;
             const token = await auth.currentUser.getIdToken();
-            const response = await fetch('http://localhost:5000/api/users', {
+            const response = await fetch('{apiUrl}/api/users', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
@@ -32,7 +32,7 @@ const UserManagementPage = ({ userProfile }) => {
         setError('');
         setMessage('');
         const token = await auth.currentUser.getIdToken();
-        const response = await fetch('http://localhost:5000/api/users', {
+        const response = await fetch('{apiUrl}/api/users', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ email, password, role })
@@ -52,7 +52,7 @@ const UserManagementPage = ({ userProfile }) => {
         if (!window.confirm(`Are you sure you want to disable the user: ${userToDisable.email}? They will no longer be able to log in.`)) return;
         try {
             const token = await auth.currentUser.getIdToken();
-            const response = await fetch(`http://localhost:5000/api/users/${userToDisable.uid}`, {
+            const response = await fetch(`{apiUrl}/api/users/${userToDisable.uid}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

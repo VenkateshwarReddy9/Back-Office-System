@@ -57,7 +57,7 @@ const AddExpenseForm = ({ onNewExpense, transactionToEdit, onUpdate, onCancelEdi
             reason: editReason // <-- Send the reason
         };
         
-        const endpoint = isEditMode ? `http://localhost:5000/api/transactions/${transactionToEdit.id}` : 'http://localhost:5000/api/transactions';
+        const endpoint = isEditMode ? `{apiUrl}/api/transactions/${transactionToEdit.id}` : '{apiUrl}/api/transactions';
         const method = isEditMode ? 'PUT' : 'POST';
 
         try {

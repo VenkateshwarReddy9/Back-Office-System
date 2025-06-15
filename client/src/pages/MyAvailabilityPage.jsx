@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase';
 
+const apiUrl = import.meta.env.VITE_API_URL;
 const MyAvailabilityPage = () => {
     const [availability, setAvailability] = useState([]);
     const [reason, setReason] = useState('');
@@ -18,7 +19,7 @@ const MyAvailabilityPage = () => {
         setLoading(true);
         const token = await user.getIdToken();
         try {
-            const response = await fetch(`http://localhost:5000/api/availability?user_uid=${user.uid}`, {
+            const response = await fetch(`{apiUrl}/api/availability?user_uid=${user.uid}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!response.ok) throw new Error('Failed to fetch availability.');
@@ -46,7 +47,7 @@ const MyAvailabilityPage = () => {
         }
         try {
             const token = await user.getIdToken();
-            await fetch('http://localhost:5000/api/availability', {
+            await fetch('{apiUrl}/api/availability', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ start_time: startTime, end_time: endTime, reason })
@@ -63,7 +64,7 @@ const MyAvailabilityPage = () => {
         if (!user) return;
         const token = await user.getIdToken();
         try {
-            const response = await fetch(`http://localhost:5000/api/availability/${availabilityId}`, {
+            const response = await fetch(`{apiUrl}/api/availability/${availabilityId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

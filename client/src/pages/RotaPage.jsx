@@ -58,10 +58,10 @@ const rotaCalculations = useMemo(() => {
 
         try {
             const [employeesRes, templatesRes, rotaRes, availabilityRes] = await Promise.all([
-                fetch('http://localhost:5000/api/employees', { headers }),
-                fetch('http://localhost:5000/api/shift-templates', { headers }),
-                fetch(`http://localhost:5000/api/rota?start_date=${format(startDate, 'yyyy-MM-dd')}&end_date=${format(endDate, 'yyyy-MM-dd')}`, { headers }),
-                fetch(`http://localhost:5000/api/availability/rota?start_date=${format(startDate, 'yyyy-MM-dd')}&end_date=${format(endDate, 'yyyy-MM-dd')}`, { headers })
+                fetch('{apiUrl}/api/employees', { headers }),
+                fetch('{apiUrl}/api/shift-templates', { headers }),
+                fetch(`{apiUrl}/api/rota?start_date=${format(startDate, 'yyyy-MM-dd')}&end_date=${format(endDate, 'yyyy-MM-dd')}`, { headers }),
+                fetch(`{apiUrl}/api/availability/rota?start_date=${format(startDate, 'yyyy-MM-dd')}&end_date=${format(endDate, 'yyyy-MM-dd')}`, { headers })
             ]);
 
             if (!employeesRes.ok || !templatesRes.ok || !rotaRes.ok || !availabilityRes.ok) {
@@ -95,7 +95,7 @@ const rotaCalculations = useMemo(() => {
         
         const token = await auth.currentUser.getIdToken();
         try {
-            const response = await fetch('http://localhost:5000/api/rota', {
+            const response = await fetch('{apiUrl}/api/rota', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json', 
@@ -125,7 +125,7 @@ const rotaCalculations = useMemo(() => {
         
         const token = await auth.currentUser.getIdToken();
         try {
-            const response = await fetch(`http://localhost:5000/api/rota/${scheduledShiftId}`, {
+            const response = await fetch(`{apiUrl}/api/rota/${scheduledShiftId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -149,7 +149,7 @@ const rotaCalculations = useMemo(() => {
         const token = await auth.currentUser.getIdToken();
         const endDate = addDays(weekStartDate, 6);
         try {
-            const response = await fetch('http://localhost:5000/api/rota/publish', {
+            const response = await fetch('{apiUrl}/api/rota/publish', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

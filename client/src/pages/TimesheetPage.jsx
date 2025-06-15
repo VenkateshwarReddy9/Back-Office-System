@@ -22,7 +22,7 @@ const TimesheetPage = () => {
         const endDateStr = format(end, 'yyyy-MM-dd');
 
         try {
-            const response = await fetch(`http://localhost:5000/api/reports/timesheet?start_date=${startDateStr}&end_date=${endDateStr}`, { headers });
+            const response = await fetch(`{apiUrl}/api/reports/timesheet?start_date=${startDateStr}&end_date=${endDateStr}`, { headers });
             if (!response.ok) throw new Error('Failed to fetch timesheet report.');
             const data = await response.json();
             setReportData(data.data || []);
@@ -43,7 +43,7 @@ const TimesheetPage = () => {
         // This opens the CSV download link in a new tab.
         // We need to get the token again for the authenticated download link.
         auth.currentUser.getIdToken().then(token => {
-            const exportUrl = `http://localhost:5000/api/reports/timesheet/export?start_date=${startDateStr}&end_date=${endDateStr}&token=${token}`;
+            const exportUrl = `{apiUrl}/api/reports/timesheet/export?start_date=${startDateStr}&end_date=${endDateStr}&token=${token}`;
             window.open(exportUrl, '_blank');
         });
     };

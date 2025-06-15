@@ -155,14 +155,14 @@ const Dashboard = ({ userProfile }) => {
                 });
 
             if (isAdmin) {
-                fetch(`http://localhost:5000/api/dashboard/summary${dateQuery}`, { headers })
+                fetch(`{apiUrl}/api/dashboard/summary${dateQuery}`, { headers })
                     .then(res => res.json())
                     .then(data => setSummary(prev => ({...prev, ...data.data})));
                 
                 // We can also refresh the approval queue data here
                 // Note: The ApprovalQueue component also fetches its own data, this is an extra refresh
                 // For a larger app, we would lift the approval queue state up as well.
-                fetch(`http://localhost:5000/api/approval-requests`, { headers });
+                fetch(`{apiUrl}/api/approval-requests`, { headers });
             }
         });
     };
@@ -249,7 +249,7 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         firebaseUser.getIdToken().then(token => {
-          fetch('http://localhost:5000/api/me', { headers: { 'Authorization': `Bearer ${token}` } })
+          fetch('{apiUrl}/api/me', { headers: { 'Authorization': `Bearer ${token}` } })
             .then(res => res.json())
             .then(profileData => {
               if (profileData.uid) { setUserProfile(profileData); } 

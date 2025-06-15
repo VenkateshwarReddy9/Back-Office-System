@@ -19,7 +19,7 @@ const EditEmployeePage = () => {
         const fetchEmployee = async () => {
             const token = await auth.currentUser.getIdToken();
             try {
-                const response = await fetch(`http://localhost:5000/api/employees/${uid}`, {
+                const response = await fetch(`{apiUrl}/api/employees/${uid}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) throw new Error('Failed to fetch employee data.');
@@ -47,7 +47,7 @@ const EditEmployeePage = () => {
         setError('');
         const token = await auth.currentUser.getIdToken();
         try {
-            const response = await fetch(`http://localhost:5000/api/employees/${uid}`, {
+            const response = await fetch(`{apiUrl}/api/employees/${uid}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

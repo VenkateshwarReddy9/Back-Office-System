@@ -19,7 +19,7 @@ const LaborReportPage = () => {
 
             const token = await auth.currentUser.getIdToken();
             try {
-                const response = await fetch(`http://localhost:5000/api/reports/labor-vs-sales?date=${date}`, {
+                const response = await fetch(`{apiUrl}/api/reports/labor-vs-sales?date=${date}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) throw new Error('Failed to fetch report data.');

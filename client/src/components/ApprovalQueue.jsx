@@ -10,7 +10,7 @@ const ApprovalQueue = ({ onActionComplete }) => {
         if (!auth.currentUser) return;
         const token = await auth.currentUser.getIdToken();
         try {
-            const response = await fetch('http://localhost:5000/api/approval-requests', {
+            const response = await fetch('{apiUrl}/api/approval-requests', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
@@ -39,7 +39,7 @@ const ApprovalQueue = ({ onActionComplete }) => {
         if (!window.confirm(confirmText)) return;
 
         const token = await auth.currentUser.getIdToken();
-        const response = await fetch(`http://localhost:5000/api/transactions/${transactionId}/${action}`, {
+        const response = await fetch(`{apiUrl}/api/transactions/${transactionId}/${action}`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
         });
