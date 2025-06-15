@@ -16,15 +16,13 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
 }
 
 // Now initialize Firebase with the corrected config
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccountConfig) // Use the corrected config here
-});
+
 const db = require('./database.js');
 
 db.createTables();
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccountConfig) // Use the corrected config here
 });
 
 const app = express();
