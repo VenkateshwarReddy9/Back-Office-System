@@ -1,24 +1,29 @@
+# Dependencies
+/node_modules
+/client/node_modules
+/server/node_modules
+
+# Build output from the frontend
+/client/dist
+
 # Logs
-logs
-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Environment variables - VERY IMPORTANT
+# These files contain secret keys and should NEVER be on GitHub.
+.env
+/server/.env
+/client/.env.local
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Firebase service account key - CRITICAL
+/server/serviceAccountKey.json
+
+# Old local database file (no longer used)
+/server/ledger.db
+
+# OS-generated files
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db

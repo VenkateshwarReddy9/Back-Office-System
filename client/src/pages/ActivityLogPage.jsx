@@ -19,9 +19,7 @@ const ActivityLogPage = () => {
                 const response = await fetch('http://localhost:5000/api/activity-logs', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                if (!response.ok) {
-                    throw new Error('Could not fetch activity logs.');
-                }
+                if (!response.ok) throw new Error('Could not fetch activity logs.');
                 const data = await response.json();
                 setLogs(data.data || []);
             } catch (err) {
@@ -30,17 +28,34 @@ const ActivityLogPage = () => {
                 setLoading(false);
             }
         };
-
         fetchLogs();
     }, []);
 
-    if (loading) {
-        return <p className="text-center text-gray-300">Loading activity log...</p>;
-    }
+    // --- NEW: Helper function to make actions look nice ---
+    const getActionStyle = (actionType) => {
+        switch (actionType) {
+            case 'CREATE_SALE':
+            case 'CREATE_EXPENSE':
+            case 'CREATE_USER':
+                return { text: 'Create', className: 'text-green-400' };
+            case 'UPDATE_TRANSACTION':
+                return { text: 'Update', className: 'text-yellow-400' };
+            case 'ADMIN_DELETE_TRANSACTION':
+            case 'APPROVE_DELETION':
+            case 'DISABLE_USER':
+                return { text: 'Delete / Disable', className: 'text-red-500' };
+            case 'REJECT_DELETION':
+            case 'REQUEST_DELETION':
+                return { text: 'Review', className: 'text-blue-400' };
+            case 'PROMOTE_ADMIN':
+                 return { text: 'Promotion', className: 'text-purple-400' };
+            default:
+                return { text: actionType.replace('_', ' '), className: 'text-white' };
+        }
+    };
 
-    if (error) {
-        return <p className="text-center text-red-500">Error: {error}</p>;
-    }
+    if (loading) return <p className="text-center text-gray-300">Loading activity log...</p>;
+    if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
     return (
         <div>
@@ -64,14 +79,20 @@ const ActivityLogPage = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                logs.map(log => (
-                                    <tr key={log.id} className="border-b border-gray-700 hover:bg-gray-700/50 transition-colors">
-                                        <td className="p-4 text-gray-300 whitespace-nowrap">{new Date(log.timestamp).toLocaleString()}</td>
-                                        <td className="p-4 text-gray-300 whitespace-nowrap">{log.user_email}</td>
-                                        <td className="p-4 text-white font-mono">{log.action_type}</td>
-                                        <td className="p-4 text-gray-300">{log.details}</td>
-                                    </tr>
-                                ))
+                                logs.map(log => {
+                                    // Get the styled text and class for the action
+                                    const actionStyle = getActionStyle(log.action_type);
+                                    return (
+                                        <tr key={log.id} className="border-b border-gray-700 hover:bg-gray-700/50 transition-colors">
+                                            <td className="p-4 text-gray-300 whitespace-nowrap">{new Date(log.timestamp).toLocaleString()}</td>
+                                            <td className="p-4 text-gray-300 whitespace-nowrap">{log.user_email}</td>
+                                            {/* --- UPDATED: Use the styled action --- */}
+                                            <td className={`p-4 font-mono font-bold ${actionStyle.className}`}>{actionStyle.text}</td>
+                                            {/* Removed whitespace-nowrap from details to allow wrapping */}
+                                            <td className="p-4 text-gray-300">{log.details}</td>
+                                        </tr>
+                                    )
+                                })
                             )}
                         </tbody>
                     </table>

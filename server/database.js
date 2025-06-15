@@ -2,24 +2,23 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// The pool will use the DATABASE_URL from your .env file to connect
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
         require: true,
     },
+    // --- NEW CONFIGURATION TO PREVENT TIMEOUTS ---
+    keepAlive: true, // Sends a "keep-alive" signal to prevent the connection from being flagged as idle
+    idleTimeoutMillis: 30000, // Closes idle clients in the pool after 30 seconds
+    connectionTimeoutMillis: 5000, // Returns an error after 5 seconds if a connection cannot be established
 });
 
-// This function creates all of our tables if they don't already exist
 const createTables = async () => {
     const client = await pool.connect();
     try {
         console.log('Connected to the PostgreSQL database, checking tables...');
-        
-        // Use SERIAL PRIMARY KEY for auto-incrementing IDs in PostgreSQL
-        // Use TIMESTAMPTZ for timestamps with time zones
         await client.query(`
-            CREATE TABLE IF NOT EXISTS Users (
+            CREATE TABLE IF NOT EXISTS users (
                 uid TEXT PRIMARY KEY,
                 email TEXT NOT NULL UNIQUE,
                 role TEXT NOT NULL DEFAULT 'staff',
@@ -27,18 +26,19 @@ const createTables = async () => {
             );
         `);
         await client.query(`
-            CREATE TABLE IF NOT EXISTS Transactions (
+            CREATE TABLE IF NOT EXISTS transactions (
                 id SERIAL PRIMARY KEY,
-                user_uid TEXT NOT NULL REFERENCES Users(uid),
+                user_uid TEXT NOT NULL REFERENCES users(uid),
                 description TEXT NOT NULL,
                 amount NUMERIC(10, 2) NOT NULL,
-                type TEXT NOT NULL DEFAULT 'expense',
+                type TEXT NOT NULL,
+                category TEXT, -- This was the missing column
                 status TEXT NOT NULL DEFAULT 'approved',
                 transaction_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
             );
         `);
         await client.query(`
-            CREATE TABLE IF NOT EXISTS Activity_Logs (
+            CREATE TABLE IF NOT EXISTS activity_logs (
                 id SERIAL PRIMARY KEY,
                 user_uid TEXT NOT NULL,
                 user_email TEXT NOT NULL,
@@ -55,8 +55,6 @@ const createTables = async () => {
     }
 };
 
-// We now export an object with a 'query' method for running queries
-// and the 'createTables' function to be run at server start.
 module.exports = {
     query: (text, params) => pool.query(text, params),
     createTables,

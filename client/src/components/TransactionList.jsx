@@ -3,8 +3,7 @@
 import React from 'react';
 import { auth } from '../firebase';
 
-// Now accepts onEdit and onActionComplete to communicate with the Dashboard
-const TransactionList = ({ transactions, userProfile, onEdit, onActionComplete }) => {
+const TransactionList = ({ title, transactions, userProfile, onEdit, onActionComplete }) => {
 
     const handleRequestDelete = async (transactionId) => {
         if (!window.confirm("Are you sure you want to request deletion for this item?")) return;
@@ -59,17 +58,19 @@ const TransactionList = ({ transactions, userProfile, onEdit, onActionComplete }
     if (!transactions || transactions.length === 0) {
         return (
             <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-                <h3 className="text-xl font-bold text-white">Your Expenses</h3>
-                <p className="text-gray-400 mt-2">No expenses recorded for this day.</p>
+                {/* Now uses the specific title passed in props */}
+                <h3 className="text-xl font-bold text-white">{title}</h3>
+                <p className="text-gray-400 mt-2">No {title.toLowerCase()} recorded for this day.</p>
             </div>
         );
     }
 
-    const isAdmin = userProfile.role === 'primary_admin' || userProfile.role === 'secondary_admin';
+    const isAdmin = userProfile.role.includes('admin');
 
     return (
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-            <h3 className="text-xl font-bold text-white mb-4">Your Expenses</h3>
+            {/* The h3 tag now correctly uses the 'title' prop */}
+            <h3 className="text-xl font-bold text-white mb-4">{title}</h3>
             <ul className="space-y-3">
                 {transactions.map(t => (
                     <li key={t.id} className="bg-gray-700 p-4 rounded-lg flex justify-between items-center transition-all duration-200">
@@ -78,15 +79,17 @@ const TransactionList = ({ transactions, userProfile, onEdit, onActionComplete }
                             <span className="font-semibold text-white">{t.description}</span>
                             <span className="text-sm text-gray-400 block">
                                 {new Date(t.transaction_date).toLocaleString()}
-                                {isAdmin && t.user_email && <span className="ml-2 font-medium">(Added by: {t.user_email})</span>}
+                                {isAdmin && t.user_email && <span className="ml-2 font-medium">(by: {t.user_email})</span>}
                             </span>
                         </div>
                         
                         {/* Right side: Amount and Actions */}
                         <div className="flex items-center space-x-4">
-                            <span className="text-2xl font-bold text-white">£{parseFloat(t.amount).toFixed(2)}</span>
+                            <span className={`text-2xl font-bold ${t.type === 'sale' ? 'text-green-400' : 'text-red-400'}`}>
+                                {t.type === 'sale' ? '+' : '-'}£{parseFloat(t.amount).toFixed(2)}
+                            </span>
                             
-                            <div className="flex items-center justify-end space-x-2 w-48">
+                            <div className="flex items-center justify-end space-x-2 w-36">
                                 {t.status === 'pending_delete' && (
                                     <span className="text-yellow-400 font-semibold text-sm">Pending Deletion</span>
                                 )}
@@ -94,6 +97,7 @@ const TransactionList = ({ transactions, userProfile, onEdit, onActionComplete }
                                 {t.status === 'approved' && (
                                     isAdmin ? (
                                         <>
+                                            {/* onEdit now passes the entire transaction object 't' to the parent */}
                                             <button onClick={() => onEdit(t)} className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1 px-3 rounded-md transition-colors">
                                                 Edit
                                             </button>
