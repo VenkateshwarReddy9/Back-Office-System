@@ -2,30 +2,37 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+// --- THIS IS THE CORRECTED CODE ---
+
 const admin = require("firebase-admin");
 require("dotenv").config();
 
 try {
     const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT;
+
     if (!serviceAccountBase64) {
         throw new Error('FIREBASE_SERVICE_ACCOUNT environment variable is not set.');
     }
 
-    // Decode the Base64 string into a JSON string
     const serviceAccountJson = Buffer.from(serviceAccountBase64, 'base64').toString('utf8');
-    
-    // Parse the decoded JSON string
     const serviceAccount = JSON.parse(serviceAccountJson);
 
+    // THE ONLY INITIALIZATION CALL SHOULD BE HERE:
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+    });
 
+    console.log("Firebase Admin SDK initialized successfully.");
 
 } catch (error) {
-    console.error("Failed to initialize Firebase Admin SDK:", error);
-    // Exit the process if Firebase Admin fails to initialize, as the app cannot run without it.
+    console.error("FATAL: Failed to initialize Firebase Admin SDK.", error);
     process.exit(1);
 }
 
-module.exports = admin;
+// THE DUPLICATE CALL THAT WAS HERE SHOULD BE GONE.
+
+// ... The rest of your server code (app.use(cors()), routes, app.listen(), etc.)
+
 
 const db = require('./database.js');
 
