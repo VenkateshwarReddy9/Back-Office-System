@@ -3,9 +3,22 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const admin = require('firebase-admin');
-const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
+// In server/index.js
+
+const serviceAccountConfig = process.env.FIREBASE_SERVICE_ACCOUNT
   ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
   : require('./serviceAccountKey.json');
+
+// --- THIS IS THE NEW FIX ---
+// This ensures the private key is formatted correctly when read from an environment variable
+if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+  serviceAccountConfig.private_key = serviceAccountConfig.private_key.replace(/\\n/g, '\n');
+}
+
+// Now initialize Firebase with the corrected config
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccountConfig) // Use the corrected config here
+});
 const db = require('./database.js');
 
 db.createTables();
