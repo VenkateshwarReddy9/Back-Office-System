@@ -3,9 +3,24 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const admin = require('firebase-admin');
-const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
+// In server/index.js
+
+// This code now handles both local file and the deployment environment variable
+const serviceAccountConfig = process.env.FIREBASE_SERVICE_ACCOUNT
   ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
   : require('./serviceAccountKey.json');
+
+// --- THIS IS THE KEY FIX ---
+// It ensures the private key is formatted with real newlines, which Firebase needs.
+if (serviceAccountConfig.private_key) {
+  serviceAccountConfig.private_key = serviceAccountConfig.private_key.replace(/\\n/g, '\n');
+}
+
+// Now initialize Firebase with the corrected config
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccountConfig)
+});
+
 const db = require('./database.js');
 
 db.createTables();
